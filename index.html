@@ -14,7 +14,7 @@
     <section id="screen-welcome" class="screen">
       <h1>Number Task Study</h1>
       <p>Thank you for helping with this class research project for MIE 657 (Human Factors) at UMass Amherst.</p>
-      <p>You will see a series of short numbers, one at a time, and type each one back. It takes about 5 minutes.</p>
+      <p>You will see a series of short numbers, one at a time, and type each one back. It takes about 2 minutes.</p>
       <p>Taking part is voluntary, and you can stop at any time by closing this page. No names or contact details are collected. Your answers are stored anonymously and used only for this class project.</p>
       <label class="check">
         <input type="checkbox" id="consent"> I am 18 or older and agree to take part.
@@ -37,14 +37,12 @@
 
     <!-- 3. Show a number -->
     <section id="screen-show" class="screen" hidden>
-      <p class="progress" id="show-progress"></p>
       <div class="big-number" id="show-number"></div>
       <button id="btn-seen">Next</button>
     </section>
 
     <!-- 4. Immediate recall of that number -->
     <section id="screen-type" class="screen" hidden>
-      <p class="progress" id="type-progress"></p>
       <label for="type-input">Type the number you just saw:</label>
       <input id="type-input" class="num-input big" inputmode="numeric" autocomplete="off" pattern="[0-9]*">
       <button id="btn-type-submit">Submit</button>
@@ -54,26 +52,20 @@
     <section id="screen-recall" class="screen" hidden>
       <h1>One last question</h1>
       <p>Please try to remember <strong>all</strong> of the numbers you saw during the task, not just the last one.</p>
-      <p>Type each number next to the position where you saw it. If you only remember part of a number, type the digits you remember. Leave a box empty if you don't remember that number at all.</p>
-      <div id="recall-slots" class="slots"></div>
-      <label for="recall-unplaced" class="spaced">Any other numbers you remember but can't place (separate them with spaces or commas):</label>
-      <input id="recall-unplaced" class="num-input wide" autocomplete="off">
+      <p>Enter each number you remember on its own row, in any order. If you only remember some of the digits, fill in those digits in their places and leave the others empty.</p>
+      <p>Please don't guess. Only enter digits you actually remember.</p>
+      <div id="recall-rows" class="rows"></div>
       <button id="btn-recall-submit">Submit</button>
     </section>
 
-    <!-- 6. Two follow-up questions -->
+    <!-- 6. Follow-up question -->
     <section id="screen-followup" class="screen" hidden>
-      <h1>Two quick questions</h1>
+      <h1>One quick question</h1>
       <fieldset>
         <legend>Before that last question, did you expect to be asked about the earlier numbers?</legend>
         <label class="check"><input type="radio" name="suspected" value="yes"> Yes</label>
         <label class="check"><input type="radio" name="suspected" value="no"> No</label>
         <label class="check"><input type="radio" name="suspected" value="unsure"> Not sure</label>
-      </fieldset>
-      <fieldset>
-        <legend>Do you have any pilot or air traffic control experience?</legend>
-        <label class="check"><input type="radio" name="pilot" value="yes"> Yes</label>
-        <label class="check"><input type="radio" name="pilot" value="no"> No</label>
       </fieldset>
       <button id="btn-finish">Finish</button>
     </section>

@@ -28,25 +28,31 @@
     return out;
   }
 
-  // Distinct numbers with no leading zero, e.g. 100-999 for 3 digits.
+  // Random numbers with no leading zero, chosen so that no two numbers share
+  // two digits in the same places (positions 1+2, 2+3, or 1+3). That way any
+  // answer with 2+ digits in the right places can only match one number.
   function makeNumbers() {
-    var min = Math.pow(10, D - 1), max = Math.pow(10, D) - 1, seen = {}, list = [];
-    while (list.length < N) {
-      var n = String(min + Math.floor(Math.random() * (max - min + 1)));
-      if (!seen[n]) { seen[n] = true; list.push(n); }
+    var min = Math.pow(10, D - 1), max = Math.pow(10, D) - 1;
+    for (var attempt = 0; attempt < 1000; attempt++) {
+      var list = [], tries = 0;
+      while (list.length < N && tries < 5000) {
+        tries++;
+        var n = String(min + Math.floor(Math.random() * (max - min + 1)));
+        if (list.every(function (m) { return placeMatches(m, n) < 2; })) list.push(n);
+      }
+      if (list.length === N) return list;
     }
-    return list;
+    throw new Error("Could not generate numbers");
+  }
+
+  // How many digits of `answer` (array or string, "" = blank) equal `shown` in the same place.
+  function placeMatches(shown, answer) {
+    var hits = 0;
+    for (var i = 0; i < shown.length; i++) if (answer[i] && answer[i] === shown[i]) hits++;
+    return hits;
   }
 
   function digitsOnly(s) { return String(s || "").replace(/\D/g, ""); }
-
-  // Partial credit: share of digits that are correct AND in the right place.
-  function digitScore(shown, answer) {
-    if (!answer) return 0;
-    var hits = 0;
-    for (var i = 0; i < shown.length; i++) if (answer[i] === shown[i]) hits++;
-    return Math.round((hits / shown.length) * 1000) / 1000;
-  }
 
   function loadBackups() {
     try { return JSON.parse(localStorage.getItem(BACKUP_KEY) || "[]"); } catch (e) { return []; }
@@ -117,10 +123,7 @@
   $("btn-begin").onclick = function () { inProgress = true; showNumber(); };
 
   // ---------- sequence ----------
-  function progressText() { return "Number " + (state.index + 1) + " of " + N; }
-
   function showNumber() {
-    $("show-progress").textContent = progressText();
     $("show-number").textContent = numbers[state.index];
     show("screen-show");
     state.shownAt = performance.now();
@@ -129,7 +132,6 @@
   $("btn-seen").onclick = function () {
     state.viewMs[state.index] = Math.round(performance.now() - state.shownAt);
     $("show-number").textContent = "";
-    $("type-progress").textContent = progressText();
     $("type-input").value = "";
     show("screen-type");
     state.typeAt = performance.now();
@@ -148,23 +150,40 @@
 
   // ---------- surprise recall ----------
   function buildRecall() {
-    var box = $("recall-slots");
+    var box = $("recall-rows");
     box.innerHTML = "";
-    for (var i = 1; i <= N; i++) {
-      var label = ordinal(i) + " number" + (i === 1 ? " (first)" : i === N ? " (last)" : "");
-      var row = document.createElement("label");
-      row.className = "slot";
-      row.innerHTML = "<span>" + label + "</span>";
-      var inp = document.createElement("input");
-      inp.className = "num-input";
-      inp.id = "slot-" + i;
-      inp.setAttribute("inputmode", "numeric");
-      inp.setAttribute("autocomplete", "off");
-      row.appendChild(inp);
+    var all = [];
+    for (var r = 1; r <= N; r++) {
+      var row = document.createElement("div");
+      row.className = "row";
+      for (var c = 1; c <= D; c++) {
+        var inp = document.createElement("input");
+        inp.className = "digit";
+        inp.id = "d-" + r + "-" + c;
+        inp.maxLength = 1;
+        inp.setAttribute("inputmode", "numeric");
+        inp.setAttribute("autocomplete", "off");
+        inp.setAttribute("aria-label", "Row " + r + ", digit " + c);
+        row.appendChild(inp);
+        all.push(inp);
+      }
       box.appendChild(row);
     }
+    // Typing a digit jumps to the next box; Backspace in an empty box goes back.
+    all.forEach(function (inp, k) {
+      inp.addEventListener("input", function () {
+        inp.value = digitsOnly(inp.value).slice(-1);
+        if (inp.value && all[k + 1]) all[k + 1].focus();
+      });
+      inp.addEventListener("keydown", function (e) {
+        if (e.key === "Backspace" && !inp.value && all[k - 1]) { all[k - 1].focus(); e.preventDefault(); }
+        if (e.key === "ArrowRight" && all[k + 1]) all[k + 1].focus();
+        if (e.key === "ArrowLeft" && all[k - 1]) all[k - 1].focus();
+      });
+    });
     state.recallAt = performance.now();
     show("screen-recall");
+    all[0].focus();
   }
 
   $("btn-recall-submit").onclick = function () {
@@ -197,9 +216,7 @@
       num_items: N,
       digits: D,
     };
-    var unplaced = String($("recall-unplaced").value || "").split(/[\s,;]+/).map(digitsOnly).filter(Boolean);
-
-    // Position 1 = first number seen. "back" = how many numbers back from the end (1 = last seen).
+    // Position 1 = first number seen. back_N = how many numbers back from the end (1 = last seen).
     for (var i = 0; i < N; i++) {
       var p = i + 1;
       row["shown_" + p] = numbers[i];
@@ -208,18 +225,38 @@
       row["view_ms_" + p] = state.viewMs[i];
       row["type_ms_" + p] = state.typeMs[i];
     }
-    for (var j = 0; j < N; j++) {
-      var q = j + 1, ans = digitsOnly($("slot-" + q).value);
-      row["recall_" + q] = ans;
-      row["recall_exact_" + q] = ans === numbers[j] ? 1 : 0;
-      row["recall_digits_" + q] = digitScore(numbers[j], ans);
-      row["unplaced_match_" + q] = unplaced.indexOf(numbers[j]) >= 0 ? 1 : 0;
-      row["back_" + q] = N - j;
+
+    // Recall answers, in the order the participant entered them. "_" = blank digit.
+    var best = numbers.map(function () { return 0; });
+    var answers = 0;
+    for (var r = 1; r <= N; r++) {
+      var digits = [];
+      for (var c = 1; c <= D; c++) digits.push(digitsOnly($("d-" + r + "-" + c).value).slice(-1));
+      var text = digits.map(function (d) { return d || "_"; }).join("");
+      var matched = "";
+      if (digits.some(Boolean)) {
+        answers++;
+        // At most one shown number can have 2+ digits in place (see makeNumbers).
+        for (var k = 0; k < N; k++) {
+          var hits = placeMatches(numbers[k], digits);
+          if (hits >= 2) { matched = k + 1; best[k] = Math.max(best[k], hits); break; }
+        }
+      }
+      row["answer_" + r] = digits.some(Boolean) ? text : "";
+      row["answer_" + r + "_matches_position"] = matched;
     }
-    row.recall_unplaced = unplaced.join(" ");
+    row.answers_entered = answers;
+
+    // Scores per shown position: exact (all digits right), partial (2+ digits right and in place, exact included).
+    for (var j = 0; j < N; j++) {
+      var q = j + 1;
+      row["back_" + q] = N - j;
+      row["recall_digits_in_place_" + q] = best[j];
+      row["recall_exact_" + q] = best[j] === D ? 1 : 0;
+      row["recall_partial_or_exact_" + q] = best[j] >= 2 ? 1 : 0;
+    }
     row.recall_ms = state.recallMs;
     row.suspected_test = radio("suspected");
-    row.pilot_experience = radio("pilot");
     row.screen = window.innerWidth + "x" + window.innerHeight;
     row.user_agent = navigator.userAgent;
     return row;

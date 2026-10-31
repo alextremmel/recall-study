@@ -86,9 +86,19 @@ legend { font-weight: 600; margin-bottom: 6px; }
   letter-spacing: 0.15em;
 }
 
-.slots { display: grid; gap: 10px; margin-top: 16px; }
-.slot { display: grid; grid-template-columns: 1fr 120px; gap: 12px; align-items: center; }
-.slot input { text-align: center; letter-spacing: 0.1em; }
+.rows { display: grid; gap: 12px; margin-top: 20px; }
+.row { display: flex; align-items: center; gap: 8px; }
+.digit {
+  width: 52px;
+  height: 56px;
+  font: inherit;
+  font-size: 1.6rem;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0;
+}
+.digit:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 
 .spaced { display: block; margin: 24px 0 8px; }
 
@@ -117,6 +127,6 @@ legend { font-weight: 600; margin-bottom: 6px; }
     --ok: #5cc37e;
     --warn: #e0a24a;
   }
-  .num-input { background: #1a1a1d; color: var(--text); }
+  .num-input, .digit { background: #1a1a1d; color: var(--text); }
   .banner { background: #3a3220; border-color: #6b5a2a; }
 }

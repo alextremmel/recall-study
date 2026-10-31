@@ -21,26 +21,30 @@ If you ever change the script, use **Deploy > Manage deployments > edit (pencil)
 
 ## Settings
 
-All the settings are in `config.js`: the number of items (10), the number of digits (3), and a version label that's saved with each response.
+All the settings are in `config.js`: the number of items (8), the number of digits (3), and a version label that's saved with each response.
+
+Numbers are random, with no leading zero, and no two numbers in a set share two digits in the same places (1st+2nd, 2nd+3rd, or 1st+3rd). That way every partial answer can match only one number.
 
 ## What each response row contains
 
-Positions count in the order numbers were shown (1 = first seen, 10 = last seen). `back_N` converts a position to "how many back from the end" (1 = most recent).
+Positions count in the order numbers were shown (1 = first seen, 8 = last seen). `back_N` converts a position to "how many back from the end" (1 = most recent).
 
 | Column | Meaning |
 |---|---|
 | `participant_id` | Random 6-character code |
 | `test_run` | `yes` if the link had `?test=1` |
+| `version` | Settings version (`v2` = 8 numbers, any-order recall) |
 | `shown_N` | The number shown at position N |
 | `immediate_N`, `immediate_correct_N` | What they typed right after seeing it, and whether it was exact (1/0) |
 | `view_ms_N`, `type_ms_N` | How long they looked at it, and how long they took to type it |
-| `recall_N` | What they typed in the surprise recall box for position N |
-| `recall_exact_N` | 1 if that answer matches exactly |
-| `recall_digits_N` | Share of digits that are correct and in the right place (0, 0.333, 0.667, 1) |
-| `recall_unplaced` | Numbers they remembered but couldn't place |
-| `unplaced_match_N` | 1 if one of the unplaced numbers exactly matches the number at position N |
-| `back_N` | Positions back from the end (10 − N + 1) |
+| `answer_K` | The Kth row they filled in on the recall screen, in their order. `_` is a blank digit, e.g. `_48` |
+| `answer_K_matches_position` | Which shown position that answer matches (2+ digits right and in place), or blank |
+| `answers_entered` | How many recall rows they filled in |
+| `back_N` | Positions back from the end (8 − N + 1) |
+| `recall_digits_in_place_N` | Best number of digits recalled in the right place for position N (0, 2, or 3; 1 digit counts as 0) |
+| `recall_exact_N` | 1 if the number was recalled exactly |
+| `recall_partial_or_exact_N` | 1 if at least 2 digits were recalled in the right place |
 | `recall_ms` | Time spent on the recall screen |
-| `suspected_test`, `pilot_experience` | Answers to the two follow-up questions |
+| `suspected_test` | Whether they expected the final question (yes / no / unsure) |
 
-The scoring columns are there for convenience. The raw answers are always saved too, so you can score them however your method describes.
+The raw answers are always saved, so you can re-score them if you change your scoring rule.
