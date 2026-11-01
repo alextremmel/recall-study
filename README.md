@@ -33,12 +33,13 @@ Positions count in the order numbers were shown (1 = first seen, 8 = last seen).
 |---|---|
 | `participant_id` | Random 6-character code |
 | `test_run` | `yes` if the link had `?test=1` |
-| `version` | Settings version (`v3` = 8 numbers, any-order recall, no follow-up question) |
+| `version` | Settings version (`v4` = 8 numbers, any-order recall, recall timing) |
 | `shown_N` | The number shown at position N |
 | `immediate_N`, `immediate_correct_N` | What they typed right after seeing it, and whether it was exact (1/0) |
 | `view_ms_N`, `type_ms_N` | How long they looked at it, and how long they took to type it |
 | `answer_K` | The Kth row they filled in on the recall screen, in their order. `_` is a blank digit, e.g. `_48` |
 | `answer_K_matches_position` | Which shown position that answer matches (2+ digits right and in place), or blank |
+| `answer_K_start_ms`, `answer_K_end_ms` | When they typed the first digit of that row and when they last changed it, in ms after the recall screen opened. Sorting by `start_ms` gives the true order answers were recalled in, even if they skipped rows |
 | `answers_entered` | How many recall rows they filled in |
 | `back_N` | Positions back from the end (8 − N + 1) |
 | `recall_digits_in_place_N` | Best number of digits recalled in the right place for position N (0, 2, or 3; 1 digit counts as 0) |

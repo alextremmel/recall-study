@@ -173,6 +173,10 @@
     all.forEach(function (inp, k) {
       inp.addEventListener("input", function () {
         inp.value = digitsOnly(inp.value).slice(-1);
+        // Timing per recall row, in ms since the recall screen opened.
+        var r = Math.floor(k / D) + 1, t = Math.round(performance.now() - state.recallAt);
+        if (inp.value && state.rowFirstMs[r] == null) state.rowFirstMs[r] = t;
+        state.rowLastMs[r] = t;
         if (inp.value && all[k + 1]) all[k + 1].focus();
       });
       inp.addEventListener("keydown", function (e) {
@@ -182,6 +186,8 @@
       });
     });
     state.recallAt = performance.now();
+    state.rowFirstMs = {};
+    state.rowLastMs = {};
     show("screen-recall");
     all[0].focus();
   }
@@ -263,6 +269,8 @@
       }
       row["answer_" + r] = digits.some(Boolean) ? text : "";
       row["answer_" + r + "_matches_position"] = matched;
+      row["answer_" + r + "_start_ms"] = digits.some(Boolean) && state.rowFirstMs[r] != null ? state.rowFirstMs[r] : "";
+      row["answer_" + r + "_end_ms"] = digits.some(Boolean) && state.rowLastMs[r] != null ? state.rowLastMs[r] : "";
     }
     row.answers_entered = answers;
 
