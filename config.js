@@ -1,7 +1,7 @@
 // Study settings. These are the only values you should ever need to change.
 window.STUDY_CONFIG = {
   // Paste the Google Apps Script "Web app" URL here (ends in /exec).
-  SCRIPT_URL: "",
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbyn2ltPvxPynV-VaAuqor1Yh_0iCj7DdayHiiepyNMUjZ6O3H4HdlhF50vQJMpsJv88JQ/exec",
 
   // How many numbers each participant sees before the surprise recall screen.
   NUM_ITEMS: 8,
