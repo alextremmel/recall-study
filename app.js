@@ -214,7 +214,7 @@
       body.appendChild(tr);
     }
     $("results-summary").textContent = "You remembered " + exact + " of " + N + " numbers exactly" +
-      (partial ? ", and " + partial + " more partly." : ".");
+      (partial ? ", and " + partial + " partially." : ".");
     var extras = [];
     for (var j = 1; j <= N; j++) {
       if (row["answer_" + j] && !row["answer_" + j + "_matches_position"]) extras.push(row["answer_" + j]);
@@ -280,11 +280,8 @@
     return row;
   }
 
-  function setStatus(text, cls) {
-    var el = $("save-status");
-    el.textContent = text;
-    el.className = "status " + (cls || "");
-  }
+  // Participants don't see a save message; results are also kept on the device as a backup.
+  function setStatus() {}
 
   function sendRow(row) {
     if (!CFG.SCRIPT_URL) {
