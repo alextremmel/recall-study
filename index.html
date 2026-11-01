@@ -58,26 +58,18 @@
       <button id="btn-recall-submit">Submit</button>
     </section>
 
-    <!-- 6. Follow-up question -->
-    <section id="screen-followup" class="screen" hidden>
-      <h1>One quick question</h1>
-      <fieldset>
-        <legend>Before that last question, did you expect to be asked about the earlier numbers?</legend>
-        <label class="check"><input type="radio" name="suspected" value="yes"> Yes</label>
-        <label class="check"><input type="radio" name="suspected" value="no"> No</label>
-        <label class="check"><input type="radio" name="suspected" value="unsure"> Not sure</label>
-      </fieldset>
-      <button id="btn-finish">Finish</button>
-    </section>
-
-    <!-- 7. Debrief -->
+    <!-- 6. Debrief and results -->
     <section id="screen-done" class="screen" hidden>
       <h1>Thank you!</h1>
       <p id="save-status" class="status">Saving your responses…</p>
-      <p>The last question was a surprise on purpose. This study looks at how much people remember of information they thought they were finished with, like a radio frequency a pilot has already dialed in. Telling you ahead of time would have changed how you approached the task.</p>
-      <p><strong>Please don't tell anyone else who might take this study about the surprise question.</strong></p>
-      <p>You can close this page now.</p>
-      <button id="btn-download" class="secondary" hidden>Download my responses</button>
+      <p>The last question was a surprise on purpose. This study looks at how much people remember of information they thought they were finished with. Telling you ahead of time would have changed how you approached the task.</p>
+      <h2>Your results</h2>
+      <p id="results-summary"></p>
+      <table class="results">
+        <thead><tr><th>Order shown</th><th>Number</th><th>You entered</th></tr></thead>
+        <tbody id="results-body"></tbody>
+      </table>
+      <p id="results-extra" class="muted" hidden></p>
     </section>
   </main>
 

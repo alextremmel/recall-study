@@ -100,6 +100,17 @@ legend { font-weight: 600; margin-bottom: 6px; }
 }
 .digit:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 
+h2 { font-size: 1.15rem; margin: 28px 0 8px; }
+.nowrap { white-space: nowrap; letter-spacing: 0.08em; }
+.muted { color: var(--muted); font-size: 0.95rem; }
+.results { width: 100%; border-collapse: collapse; margin-top: 8px; }
+.results th { text-align: left; font-size: 0.85rem; color: var(--muted); font-weight: 600; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.results td { padding: 8px; border-bottom: 1px solid var(--border); }
+.results td.num { font-variant-numeric: tabular-nums; letter-spacing: 0.08em; font-weight: 600; }
+.results tr.hit td:last-child { color: var(--ok); }
+.results tr.partial td:last-child { color: var(--warn); }
+.results tr.miss td:last-child { color: var(--muted); font-weight: 400; }
+
 .spaced { display: block; margin: 24px 0 8px; }
 
 .status { font-weight: 600; }

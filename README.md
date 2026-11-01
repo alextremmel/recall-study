@@ -33,7 +33,7 @@ Positions count in the order numbers were shown (1 = first seen, 8 = last seen).
 |---|---|
 | `participant_id` | Random 6-character code |
 | `test_run` | `yes` if the link had `?test=1` |
-| `version` | Settings version (`v2` = 8 numbers, any-order recall) |
+| `version` | Settings version (`v3` = 8 numbers, any-order recall, no follow-up question) |
 | `shown_N` | The number shown at position N |
 | `immediate_N`, `immediate_correct_N` | What they typed right after seeing it, and whether it was exact (1/0) |
 | `view_ms_N`, `type_ms_N` | How long they looked at it, and how long they took to type it |
@@ -45,6 +45,5 @@ Positions count in the order numbers were shown (1 = first seen, 8 = last seen).
 | `recall_exact_N` | 1 if the number was recalled exactly |
 | `recall_partial_or_exact_N` | 1 if at least 2 digits were recalled in the right place |
 | `recall_ms` | Time spent on the recall screen |
-| `suspected_test` | Whether they expected the final question (yes / no / unsure) |
 
 The raw answers are always saved, so you can re-score them if you change your scoring rule.

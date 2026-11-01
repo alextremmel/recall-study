@@ -188,23 +188,42 @@
 
   $("btn-recall-submit").onclick = function () {
     state.recallMs = Math.round(performance.now() - state.recallAt);
-    show("screen-followup");
-  };
-
-  // ---------- follow-up and save ----------
-  function radio(name) {
-    var el = document.querySelector('input[name="' + name + '"]:checked');
-    return el ? el.value : "";
-  }
-
-  $("btn-finish").onclick = function () {
     inProgress = false;
     var row = buildRow();
     saveBackup(row);
+    showResults(row);
     show("screen-done");
     sendRow(row);
-    $("btn-download").onclick = function () { download("recall-" + row.participant_id + ".csv", toCsv([row])); };
   };
+
+  // ---------- results shown to the participant ----------
+  function showResults(row) {
+    var body = $("results-body"), exact = 0, partial = 0;
+    body.innerHTML = "";
+    for (var p = 1; p <= N; p++) {
+      var entered = "";
+      for (var k = 1; k <= N; k++) {
+        if (row["answer_" + k + "_matches_position"] === p) { entered = row["answer_" + k]; break; }
+      }
+      var cls = row["recall_exact_" + p] ? "hit" : row["recall_partial_or_exact_" + p] ? "partial" : "miss";
+      if (cls === "hit") exact++; else if (cls === "partial") partial++;
+      var tr = document.createElement("tr");
+      tr.className = cls;
+      tr.innerHTML = "<td>" + ordinal(p) + "</td><td class=\"num\">" + row["shown_" + p] +
+        "</td><td class=\"num\">" + (entered ? entered : "—") + "</td>";
+      body.appendChild(tr);
+    }
+    $("results-summary").textContent = "You remembered " + exact + " of " + N + " numbers exactly" +
+      (partial ? ", and " + partial + " more partly." : ".");
+    var extras = [];
+    for (var j = 1; j <= N; j++) {
+      if (row["answer_" + j] && !row["answer_" + j + "_matches_position"]) extras.push(row["answer_" + j]);
+    }
+    if (extras.length) {
+      $("results-extra").innerHTML = "Other entries that didn't match a number: " + extras.map(function (x) { return "<span class=\"nowrap\">" + x + "</span>"; }).join(", ");
+      $("results-extra").hidden = false;
+    }
+  }
 
   function buildRow() {
     var row = {
@@ -256,7 +275,6 @@
       row["recall_partial_or_exact_" + q] = best[j] >= 2 ? 1 : 0;
     }
     row.recall_ms = state.recallMs;
-    row.suspected_test = radio("suspected");
     row.screen = window.innerWidth + "x" + window.innerHeight;
     row.user_agent = navigator.userAgent;
     return row;
@@ -271,7 +289,6 @@
   function sendRow(row) {
     if (!CFG.SCRIPT_URL) {
       setStatus("Your responses were saved on this device.", "warn");
-      $("btn-download").hidden = false;
       return;
     }
     var body = JSON.stringify(row);
@@ -288,7 +305,6 @@
           .then(function () { setStatus("Your responses were sent.", "ok"); })
           .catch(function () {
             setStatus("We couldn't reach the server, but your responses were saved on this device.", "warn");
-            $("btn-download").hidden = false;
           });
       });
   }
