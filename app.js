@@ -258,23 +258,34 @@
       var digits = [];
       for (var c = 1; c <= D; c++) digits.push(digitsOnly($("d-" + r + "-" + c).value).slice(-1));
       var text = digits.map(function (d) { return d || "_"; }).join("");
-      var matched = "";
+      var matched = "", tie = "";
       if (digits.some(Boolean)) {
         answers++;
-        // At most one shown number can have 2+ digits in place (see makeNumbers).
+        // An answer counts for a shown number when 2+ digits are right and in place.
+        // A full answer with one wrong digit can match two shown numbers through
+        // different digit pairs (e.g. 318 vs 348 and 518). Such ties count for neither.
+        var cands = [];
         for (var k = 0; k < N; k++) {
           var hits = placeMatches(numbers[k], digits);
-          if (hits >= 2) { matched = k + 1; best[k] = Math.max(best[k], hits); break; }
+          if (hits >= 2) cands.push({ k: k, hits: hits });
+        }
+        if (cands.length === 1) {
+          matched = cands[0].k + 1;
+          best[cands[0].k] = Math.max(best[cands[0].k], cands[0].hits);
+        } else if (cands.length > 1) {
+          tie = cands.map(function (c) { return c.k + 1; }).join("|");
         }
       }
       row["answer_" + r] = digits.some(Boolean) ? text : "";
       row["answer_" + r + "_matches_position"] = matched;
+      row["answer_" + r + "_tie_positions"] = tie;
       row["answer_" + r + "_start_ms"] = digits.some(Boolean) && state.rowFirstMs[r] != null ? state.rowFirstMs[r] : "";
       row["answer_" + r + "_end_ms"] = digits.some(Boolean) && state.rowLastMs[r] != null ? state.rowLastMs[r] : "";
     }
     row.answers_entered = answers;
 
     // Scores per shown position: exact (all digits right), partial (2+ digits right and in place, exact included).
+    // Tied answers (see above) add nothing here.
     for (var j = 0; j < N; j++) {
       var q = j + 1;
       row["back_" + q] = N - j;

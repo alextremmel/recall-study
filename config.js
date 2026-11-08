@@ -11,5 +11,5 @@ window.STUDY_CONFIG = {
 
   // Version label saved with every response, so you can tell apart data
   // collected before and after any change to the settings above.
-  VERSION: "v4",
+  VERSION: "v5",
 };
